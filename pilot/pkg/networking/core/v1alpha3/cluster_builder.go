@@ -671,6 +671,10 @@ var istioMtlsTransportSocketMatch = &structpb.Struct{
 }
 
 func (cb *ClusterBuilder) buildUpstreamClusterTLSContext(opts *buildClusterOpts, tls *networking.ClientTLSSettings) (*auth.UpstreamTlsContext, error) {
+	log.Infof("OPTS INFO: %v", opts)
+	log.Infof("TLS INFO: %v", tls)
+	log.Infof("%v", cb.push.Mesh.VerifyCertificateAtClient)
+	//log.Infof("HIT CLUSTER TLS CONTEXT: %v, OPTS: %v", tls.Mode, opts)
 	c := opts.cluster
 	proxy := opts.proxy
 
@@ -770,7 +774,11 @@ func (cb *ClusterBuilder) buildUpstreamClusterTLSContext(opts *buildClusterOpts,
 
 			// If tls.CaCertificate or CaCertificate in Metadata isn't configured don't set up SdsSecretConfig
 			if !res.IsRootCertificate() {
-				tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_ValidationContext{}
+				if cb.push.Mesh.VerifyCertificateAtClient.Value {
+					tlsContext.CommonTlsContext.ValidationContextType = authn_model.ConstructValidationContext(cb.push.Mesh.DefaultCaCertificates, []string{})
+				} else {
+					tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_ValidationContext{}
+				}
 			} else {
 				tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_CombinedValidationContext{
 					CombinedValidationContext: &auth.CommonTlsContext_CombinedCertificateValidationContext{

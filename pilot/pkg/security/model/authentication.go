@@ -25,6 +25,7 @@ import (
 	"istio.io/istio/pilot/pkg/model"
 	"istio.io/istio/pilot/pkg/networking/util"
 	"istio.io/istio/pkg/spiffe"
+	"istio.io/pkg/log"
 )
 
 const (
@@ -179,6 +180,7 @@ var (
 
 // ConstructSdsSecretConfig constructs SDS Secret Configuration for workload proxy.
 func ConstructSdsSecretConfig(name string, node *model.Proxy) *tls.SdsSecretConfig {
+	// Bookmark
 	if name == "" {
 		return nil
 	}
@@ -224,6 +226,7 @@ func ConstructSdsSecretConfig(name string, node *model.Proxy) *tls.SdsSecretConf
 
 // ConstructValidationContext constructs ValidationContext in CommonTLSContext.
 func ConstructValidationContext(rootCAFilePath string, subjectAltNames []string) *tls.CommonTlsContext_ValidationContext {
+	log.Infof("ROOT FILE: %s AND SAN LENGTH AYYY: %v", rootCAFilePath, len(subjectAltNames))
 	ret := &tls.CommonTlsContext_ValidationContext{
 		ValidationContext: &tls.CertificateValidationContext{
 			TrustedCa: &core.DataSource{
