@@ -671,10 +671,6 @@ var istioMtlsTransportSocketMatch = &structpb.Struct{
 }
 
 func (cb *ClusterBuilder) buildUpstreamClusterTLSContext(opts *buildClusterOpts, tls *networking.ClientTLSSettings) (*auth.UpstreamTlsContext, error) {
-	log.Infof("OPTS INFO: %v", opts)
-	log.Infof("TLS INFO: %v", tls)
-	log.Infof("%v", cb.push.Mesh.VerifyCertificateAtClient)
-	//log.Infof("HIT CLUSTER TLS CONTEXT: %v, OPTS: %v", tls.Mode, opts)
 	c := opts.cluster
 	proxy := opts.proxy
 

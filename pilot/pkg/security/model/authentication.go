@@ -179,7 +179,6 @@ var (
 
 // ConstructSdsSecretConfig constructs SDS Secret Configuration for workload proxy.
 func ConstructSdsSecretConfig(name string, node *model.Proxy) *tls.SdsSecretConfig {
-	// Bookmark
 	if name == "" {
 		return nil
 	}
