@@ -26,7 +26,6 @@ import (
 	kubecluster "istio.io/istio/pkg/test/framework/components/cluster/kube"
 	"istio.io/istio/pkg/test/framework/image"
 	"istio.io/istio/pkg/test/helm"
-	"istio.io/istio/tests/util/sanitycheck"
 )
 
 // TestDefaultInstall tests Istio installation using Helm with default options
@@ -58,9 +57,6 @@ global:
 			InstallGatewaysCharts(t, cs, h, "", IstioNamespace, overrideValuesFile)
 
 			VerifyInstallation(ctx, cs)
-
-			client, server := sanitycheck.SetupTrafficTest(t, ctx)
-			sanitycheck.RunTrafficTestClientServer(t, client, server)
 
 			t.Cleanup(func() {
 				deleteGatewayCharts(t, h)
