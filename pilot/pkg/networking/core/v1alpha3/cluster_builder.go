@@ -781,12 +781,6 @@ func (cb *ClusterBuilder) buildUpstreamClusterTLSContext(opts *buildClusterOpts,
 			}
 			// If tls.CaCertificate or CaCertificate in Metadata isn't configured don't set up SdsSecretConfig.
 			if !res.IsRootCertificate() {
-				// if features.VerifyCertAtClient {
-				// 	certificateInfo := os.Getenv("SSL_CERT_DIR")
-				// 	tlsContext.CommonTlsContext.ValidationContextType = authn_model.ConstructValidationContext(certificateInfo, tls.SubjectAltNames)
-				// } else {
-				// 	tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_ValidationContext{}
-				// }
 				tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_ValidationContext{}
 			} else {
 				tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_CombinedValidationContext{
@@ -834,14 +828,8 @@ func (cb *ClusterBuilder) buildUpstreamClusterTLSContext(opts *buildClusterOpts,
 			tlsContext.CommonTlsContext.TlsCertificateSdsSecretConfigs = append(tlsContext.CommonTlsContext.TlsCertificateSdsSecretConfigs,
 				authn_model.ConstructSdsSecretConfig(res.GetResourceName(), proxy))
 
-			// If tls.CaCertificate or CaCertificate in Metadata isn't configured don't set up RootSdsSecretConfig
+			// If tls.CaCertificate or CaCertificate in Metadata isn't configured don't set up RootSdsSecretConfig.
 			if !res.IsRootCertificate() {
-				// if features.VerifyCertAtClient {
-				// 	certificateInfo := os.Getenv("SSL_CERT_DIR")
-				// 	tlsContext.CommonTlsContext.ValidationContextType = authn_model.ConstructValidationContext(certificateInfo, tls.SubjectAltNames)
-				// } else {
-				// 	tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_ValidationContext{}
-				// }
 				tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_ValidationContext{}
 			} else {
 				tlsContext.CommonTlsContext.ValidationContextType = &auth.CommonTlsContext_CombinedValidationContext{

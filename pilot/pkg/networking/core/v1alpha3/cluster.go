@@ -482,25 +482,22 @@ func selectTrafficPolicyComponents(policy *networking.TrafficPolicy) (
 	outlierDetection := policy.OutlierDetection
 	loadBalancer := policy.LoadBalancer
 	tls := policy.Tls
+
+	var certFiles = []string{
+		"/etc/ssl/certs/ca-certificates.crt",                // Debian/Ubuntu/Gentoo etc.
+		"/etc/pki/tls/certs/ca-bundle.crt",                  // Fedora/RHEL 6
+		"/etc/ssl/ca-bundle.pem",                            // OpenSUSE
+		"/etc/pki/tls/cacert.pem",                           // OpenELEC
+		"/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem", // CentOS/RHEL 7
+		"/etc/ssl/cert.pem",                                 // Alpine Linux
+		"/usr/local/etc/ssl/cert.pem",                       // FreeBSD
+
+	}
 	if features.VerifyCertAtClient && tls.CaCertificates == "" {
-		if _, err := os.Stat("/etc/ssl/certs/ca-certificates.crt"); err == nil {
-			// (Debian/Ubuntu/Gentoo etc.)
-			tls.CaCertificates = "/etc/ssl/certs/ca-certificates.crt"
-		} else if _, err := os.Stat("/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"); err == nil {
-			// (CentOS/RHEL 7)
-			tls.CaCertificates = "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
-		} else if _, err := os.Stat("/etc/pki/tls/certs/ca-bundle.crt"); err == nil {
-			// (Fedora/RHEL 6)
-			tls.CaCertificates = "/etc/pki/tls/certs/ca-bundle.crt"
-		} else if _, err := os.Stat("/etc/ssl/ca-bundle.pem"); err == nil {
-			// (OpenSUSE)
-			tls.CaCertificates = "/etc/ssl/ca-bundle.pem"
-		} else if _, err := os.Stat("/usr/local/etc/ssl/cert.pem"); err == nil {
-			// (FreeBSD)
-			tls.CaCertificates = "/usr/local/etc/ssl/cert.pem"
-		} else if _, err := os.Stat("/etc/ssl/cert.pem"); err == nil {
-			// (OpenBSD)
-			tls.CaCertificates = "/etc/ssl/cert.pem"
+		for _, cert := range certFiles {
+			if _, err := os.Stat(cert); err == nil {
+				tls.CaCertificates = cert
+			}
 		}
 	}
 
