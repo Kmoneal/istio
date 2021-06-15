@@ -16,6 +16,7 @@ package v1alpha3
 
 import (
 	"math"
+	"os"
 	"strconv"
 	"strings"
 
@@ -481,6 +482,27 @@ func selectTrafficPolicyComponents(policy *networking.TrafficPolicy) (
 	outlierDetection := policy.OutlierDetection
 	loadBalancer := policy.LoadBalancer
 	tls := policy.Tls
+	if features.VerifyCertAtClient && tls.CaCertificates == "" {
+		if _, err := os.Stat("/etc/ssl/certs/ca-certificates.crt"); err == nil {
+			// (Debian/Ubuntu/Gentoo etc.)
+			tls.CaCertificates = "/etc/ssl/certs/ca-certificates.crt"
+		} else if _, err := os.Stat("/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"); err == nil {
+			// (CentOS/RHEL 7)
+			tls.CaCertificates = "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+		} else if _, err := os.Stat("/etc/pki/tls/certs/ca-bundle.crt"); err == nil {
+			// (Fedora/RHEL 6)
+			tls.CaCertificates = "/etc/pki/tls/certs/ca-bundle.crt"
+		} else if _, err := os.Stat("/etc/ssl/ca-bundle.pem"); err == nil {
+			// (OpenSUSE)
+			tls.CaCertificates = "/etc/ssl/ca-bundle.pem"
+		} else if _, err := os.Stat("/usr/local/etc/ssl/cert.pem"); err == nil {
+			// (FreeBSD)
+			tls.CaCertificates = "/usr/local/etc/ssl/cert.pem"
+		} else if _, err := os.Stat("/etc/ssl/cert.pem"); err == nil {
+			// (OpenBSD)
+			tls.CaCertificates = "/etc/ssl/cert.pem"
+		}
+	}
 
 	return connectionPool, outlierDetection, loadBalancer, tls
 }
